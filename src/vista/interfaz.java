@@ -6,6 +6,7 @@
 package vista;
 
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -190,6 +191,11 @@ public class interfaz extends javax.swing.JFrame {
         panelAdmin.setBackground(new java.awt.Color(0, 0, 0));
 
         avatarAdmin.setColorPrimario(new java.awt.Color(0, 0, 0));
+        avatarAdmin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                avatarAdminKeyPressed(evt);
+            }
+        });
 
         btnAdminIpod.setText(" ");
         btnAdminIpod.addActionListener(new java.awt.event.ActionListener() {
@@ -393,6 +399,9 @@ public class interfaz extends javax.swing.JFrame {
         );
 
         labelTask1.setForeground(new java.awt.Color(255, 255, 255));
+        labelTask1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/admin42.png"))); // NOI18N
+        labelTask1.setText("Administrador");
+        labelTask1.setDescription(" ");
 
         javax.swing.GroupLayout panelAdminAdminLayout = new javax.swing.GroupLayout(panelAdminAdmin);
         panelAdminAdmin.setLayout(panelAdminAdminLayout);
@@ -630,6 +639,77 @@ public class interfaz extends javax.swing.JFrame {
         panelAdminMaquina.setVisible(false);
         panelAdminTrabajador.setVisible(false);
     }//GEN-LAST:event_btnAdminRetrocesoActionPerformed
+
+    private void avatarAdminKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_avatarAdminKeyPressed
+        //KEY PRESSED AVATARCHOOSER
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER){
+            if(avatarAdmin.getSelectedtitulo().equals("Admin")){
+            panelLoguin.setVisible(false);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(true);
+            panelAdminAdmin.setVisible(true);
+            panelAdminClase.setVisible(false);
+            panelAdminCliente.setVisible(false);
+            panelAdminMaquina.setVisible(false);
+            panelAdminTrabajador.setVisible(false);
+        }
+        
+        if(avatarAdmin.getSelectedtitulo().equals("Clientes")){
+            panelLoguin.setVisible(false);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(true);
+            panelAdminAdmin.setVisible(false);
+            panelAdminClase.setVisible(false);
+            panelAdminCliente.setVisible(true);
+            panelAdminMaquina.setVisible(false);
+            panelAdminTrabajador.setVisible(false);
+        }
+        
+        if(avatarAdmin.getSelectedtitulo().equals("Trabajadores")){
+            panelLoguin.setVisible(false);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(true);
+            panelAdminAdmin.setVisible(false);
+            panelAdminClase.setVisible(false);
+            panelAdminCliente.setVisible(false);
+            panelAdminMaquina.setVisible(false);
+            panelAdminTrabajador.setVisible(true);
+        }
+        
+        if(avatarAdmin.getSelectedtitulo().equals("Maquinas")){
+            panelLoguin.setVisible(false);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(true);
+            panelAdminAdmin.setVisible(false);
+            panelAdminClase.setVisible(false);
+            panelAdminCliente.setVisible(false);
+            panelAdminMaquina.setVisible(true);
+            panelAdminTrabajador.setVisible(false);
+        }
+        
+        if(avatarAdmin.getSelectedtitulo().equals("Clases")){
+            panelLoguin.setVisible(false);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(true);
+            panelAdminAdmin.setVisible(false);
+            panelAdminClase.setVisible(true);
+            panelAdminCliente.setVisible(false);
+            panelAdminMaquina.setVisible(false);
+            panelAdminTrabajador.setVisible(false);
+        }
+        
+        if(avatarAdmin.getSelectedtitulo().equals("Exit")){
+            panelLoguin.setVisible(true);
+            avatarAdmin.setVisible(false);
+            panelAdmin.setVisible(false);
+            panelAdminAdmin.setVisible(false);
+            panelAdminClase.setVisible(false);
+            panelAdminCliente.setVisible(false);
+            panelAdminMaquina.setVisible(false);
+            panelAdminTrabajador.setVisible(false);
+        }
+        }
+    }//GEN-LAST:event_avatarAdminKeyPressed
 
     /**
      * @param args the command line arguments
