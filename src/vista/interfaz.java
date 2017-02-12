@@ -5,14 +5,23 @@
  */
 package vista;
 
-import clases.cliente;
+
+import clases.administrador;
 import fachada.fachada;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import org.edisoncor.gui.util.Avatar;
 
 /**
@@ -20,12 +29,14 @@ import org.edisoncor.gui.util.Avatar;
  * @author Manuel
  */
 public class interfaz extends javax.swing.JFrame {
-    String dni2, nombre, apellidos, fechaNacimiento, telefono, correo, ciudad, codPostal, direccion;
+    
     fachada f = new fachada();
+    
     
     
     String dniCliente;
     public interfaz() {
+        
         initComponents();
         setLocationRelativeTo(null);
         llenarMenu();
@@ -86,7 +97,7 @@ public class interfaz extends javax.swing.JFrame {
         panelAdminAdmin = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        listaAdmin = new javax.swing.JList<>();
         jPanel2 = new javax.swing.JPanel();
         labelMetric5 = new org.edisoncor.gui.label.LabelMetric();
         jLabel2 = new javax.swing.JLabel();
@@ -124,6 +135,7 @@ public class interfaz extends javax.swing.JFrame {
         buttonAction7 = new org.edisoncor.gui.button.ButtonAction();
         buttonAction9 = new org.edisoncor.gui.button.ButtonAction();
         buttonAction10 = new org.edisoncor.gui.button.ButtonAction();
+        atras = new org.edisoncor.gui.button.ButtonAction();
         labelMetric17 = new org.edisoncor.gui.label.LabelMetric();
         labelMetric18 = new org.edisoncor.gui.label.LabelMetric();
         txtAdminAdministradorTelefono1 = new org.edisoncor.gui.textField.TextField();
@@ -140,12 +152,12 @@ public class interfaz extends javax.swing.JFrame {
         txtAdminAdministradorNombre3 = new org.edisoncor.gui.textField.TextField();
         labelMetric22 = new org.edisoncor.gui.label.LabelMetric();
         txtAdminAdministradorApellidos3 = new org.edisoncor.gui.textField.TextField();
-        txtAdminAdministradorApellidos4 = new org.edisoncor.gui.textField.TextField();
         labelMetric23 = new org.edisoncor.gui.label.LabelMetric();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tablaClientes = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
         listaClientes = new javax.swing.JList<>();
+        fecha = new com.toedter.calendar.JDateChooser();
         panelAdminTrabajador = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
@@ -184,7 +196,7 @@ public class interfaz extends javax.swing.JFrame {
         buttonAction33 = new org.edisoncor.gui.button.ButtonAction();
         buttonAction34 = new org.edisoncor.gui.button.ButtonAction();
         jScrollPane7 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tablaMaquinas = new javax.swing.JTable();
         labelMetric38 = new org.edisoncor.gui.label.LabelMetric();
         txtAdminAdministradorNombre10 = new org.edisoncor.gui.textField.TextField();
         labelMetric39 = new org.edisoncor.gui.label.LabelMetric();
@@ -194,7 +206,7 @@ public class interfaz extends javax.swing.JFrame {
         txtAdminAdministradorNombre12 = new org.edisoncor.gui.textField.TextField();
         jPanel12 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaClases = new javax.swing.JTable();
         labelMetric33 = new org.edisoncor.gui.label.LabelMetric();
         labelMetric34 = new org.edisoncor.gui.label.LabelMetric();
         labelMetric35 = new org.edisoncor.gui.label.LabelMetric();
@@ -314,12 +326,17 @@ public class interfaz extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 0)));
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        listaAdmin.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList1);
+        listaAdmin.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaAdminMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(listaAdmin);
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 0)));
@@ -551,16 +568,38 @@ public class interfaz extends javax.swing.JFrame {
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
 
         buttonAction2.setText("Nuevo");
+        buttonAction2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAction2ActionPerformed(evt);
+            }
+        });
 
         buttonAction8.setText("Guardar");
+        buttonAction8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAction8ActionPerformed(evt);
+            }
+        });
 
         buttonAction6.setText("Modificar");
 
         buttonAction7.setText("Eliminar");
+        buttonAction7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAction7ActionPerformed(evt);
+            }
+        });
 
         buttonAction9.setText("Tarifas");
 
         buttonAction10.setText("Matricula");
+
+        atras.setText("Atrás");
+        atras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                atrasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -579,7 +618,8 @@ public class interfaz extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(buttonAction8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(buttonAction7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(buttonAction10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(buttonAction10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(atras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -594,7 +634,9 @@ public class interfaz extends javax.swing.JFrame {
                 .addComponent(buttonAction6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonAction7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(atras, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addComponent(buttonAction10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonAction9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -609,6 +651,12 @@ public class interfaz extends javax.swing.JFrame {
 
         labelMetric10.setText("Apellidos:");
         labelMetric10.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
+
+        txtAdminAdministradorDireccion1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAdminAdministradorDireccion1ActionPerformed(evt);
+            }
+        });
 
         labelMetric19.setText("Ciudad:");
         labelMetric19.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
@@ -640,7 +688,7 @@ public class interfaz extends javax.swing.JFrame {
         labelMetric23.setText("F. Nacimiento:");
         labelMetric23.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -651,19 +699,21 @@ public class interfaz extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane4.setViewportView(jTable2);
-
-        listaClientes.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        tablaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaClientesMouseClicked(evt);
+            }
         });
+        jScrollPane4.setViewportView(tablaClientes);
+
         listaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 listaClientesMouseClicked(evt);
             }
         });
         jScrollPane5.setViewportView(listaClientes);
+
+        fecha.setDateFormatString("yyyy-MM-dd");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -715,15 +765,15 @@ public class interfaz extends javax.swing.JFrame {
                                 .addComponent(txtAdminAdministradorNombre3, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(labelMetric23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtAdminAdministradorApellidos4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(318, 318, 318))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jScrollPane4)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -735,12 +785,14 @@ public class interfaz extends javax.swing.JFrame {
                     .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtAdminAdministradorApellidos4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelMetric23, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtAdminAdministradorNombre3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelMetric21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(labelMetric21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(labelMetric23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtAdminAdministradorNombre2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1081,7 +1133,7 @@ public class interfaz extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tablaMaquinas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -1092,7 +1144,7 @@ public class interfaz extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane7.setViewportView(jTable3);
+        jScrollPane7.setViewportView(tablaMaquinas);
 
         labelMetric38.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelMetric38.setText("MAQUINAS");
@@ -1157,7 +1209,7 @@ public class interfaz extends javax.swing.JFrame {
         jPanel12.setBackground(new java.awt.Color(12, 12, 12));
         jPanel12.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 0)));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaClases.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -1168,7 +1220,7 @@ public class interfaz extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane3.setViewportView(jTable1);
+        jScrollPane3.setViewportView(tablaClases);
 
         labelMetric33.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelMetric33.setText("CLASES");
@@ -1432,6 +1484,7 @@ public class interfaz extends javax.swing.JFrame {
             panelAdminCliente.setVisible(false);
             panelAdminMaquina.setVisible(false);
             panelAdminTrabajador.setVisible(false);
+            this.listaAdmin.setModel(f.listAdmin());
         }
         
         if(avatarAdmin.getSelectedtitulo().equals("Clientes")){
@@ -1443,8 +1496,9 @@ public class interfaz extends javax.swing.JFrame {
             panelAdminCliente.setVisible(true);
             panelAdminMaquina.setVisible(false);
             panelAdminTrabajador.setVisible(false);
-            listaClientes.setModel(f.listClientes());
-            this.listaClientes.setModel(f.listClientes());
+            
+            this.tablaClientes.setModel(f.listarClientes());
+            
         }
         
         if(avatarAdmin.getSelectedtitulo().equals("Trabajadores")){
@@ -1467,6 +1521,8 @@ public class interfaz extends javax.swing.JFrame {
             panelAdminCliente.setVisible(false);
             panelAdminMaquina.setVisible(true);
             panelAdminTrabajador.setVisible(false);
+            this.tablaClases.setModel(f.listarClases());
+            this.tablaMaquinas.setModel(f.listarMaquinas());
         }
         
         if(avatarAdmin.getSelectedtitulo().equals("Clases")){
@@ -1478,6 +1534,7 @@ public class interfaz extends javax.swing.JFrame {
             panelAdminCliente.setVisible(false);
             panelAdminMaquina.setVisible(false);
             panelAdminTrabajador.setVisible(false);
+            
         }
         
         if(avatarAdmin.getSelectedtitulo().equals("Exit")){
@@ -1576,25 +1633,7 @@ public class interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_avatarAdminKeyPressed
 
     private void listaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaClientesMouseClicked
-       cliente c = new cliente();
-        List lista = new ArrayList<cliente>();
-        lista.add(f.datosCliente(this.listaClientes.getSelectedValue()));
-        for(int i=0; i< lista.size(); i++) {
-            System.out.println(lista.get(i));
-          }
-        
-        
-        
-        
-            
-            
-        
-       
-        
-      
-        
-
-        
+     
         
     }//GEN-LAST:event_listaClientesMouseClicked
 
@@ -1605,6 +1644,85 @@ public class interfaz extends javax.swing.JFrame {
     private void txtAdminAdministradorNombre3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAdminAdministradorNombre3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAdminAdministradorNombre3ActionPerformed
+
+    private void tablaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaClientesMouseClicked
+        this.txtAdminAdministradorNombre3.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 0));
+        this.txtAdminAdministradorApellidos3.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 1));
+        this.txtAdminAdministradorNombre2.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 2));
+        this.txtAdminAdministradorDireccion1.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 3));
+        this.txtAdminAdministradorApellidos2.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 4));
+        this.txtAdminAdministradorCodPostal1.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 5));
+        this.txtAdminAdministradorTelefono1.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 6));
+       // this.txtAdminAdministradorApellidos4.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 7));
+        this.txtAdminAdministradorCorreo1.setText((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 8));
+        
+        this.listaClientes.setModel(f.listClases((String) this.tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 0)));
+    }//GEN-LAST:event_tablaClientesMouseClicked
+
+    private void buttonAction2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAction2ActionPerformed
+        this.txtAdminAdministradorNombre3.setText("");
+        this.txtAdminAdministradorApellidos3.setText("");
+        this.txtAdminAdministradorNombre2.setText("");
+        this.txtAdminAdministradorDireccion1.setText("");
+        this.txtAdminAdministradorApellidos2.setText("");
+        this.txtAdminAdministradorCodPostal1.setText("");
+        this.txtAdminAdministradorTelefono1.setText("");
+        //this.txtAdminAdministradorApellidos4.setText("");
+        this.txtAdminAdministradorCorreo1.setText("");
+        buttonAction6.setEnabled(false);
+        buttonAction7.setEnabled(false);
+        buttonAction10.setEnabled(false);
+        buttonAction9.setEnabled(false);
+    }//GEN-LAST:event_buttonAction2ActionPerformed
+
+    private void atrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atrasActionPerformed
+        this.txtAdminAdministradorNombre3.setText("");
+        this.txtAdminAdministradorApellidos3.setText("");
+        this.txtAdminAdministradorNombre2.setText("");
+        this.txtAdminAdministradorDireccion1.setText("");
+        this.txtAdminAdministradorApellidos2.setText("");
+        this.txtAdminAdministradorCodPostal1.setText("");
+        this.txtAdminAdministradorTelefono1.setText("");
+       // this.txtAdminAdministradorApellidos4.setText("");
+        this.txtAdminAdministradorCorreo1.setText("");
+        
+        buttonAction6.setEnabled(true);
+        buttonAction7.setEnabled(true);
+        buttonAction10.setEnabled(true);
+        buttonAction9.setEnabled(true);
+    }//GEN-LAST:event_atrasActionPerformed
+
+    private void buttonAction8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAction8ActionPerformed
+        
+        
+        if(f.añadirCliente(this.txtAdminAdministradorNombre3.getText(), this.txtAdminAdministradorApellidos3.getText(), this.txtAdminAdministradorNombre2.getText(), (Date) this.fecha.getDate(), this.txtAdminAdministradorDireccion1.getText(), Integer.parseInt(txtAdminAdministradorCodPostal1.getText()),this.txtAdminAdministradorApellidos2.getText(), Integer.parseInt(this.txtAdminAdministradorTelefono1.getText()), this.txtAdminAdministradorCorreo1.getText())){
+         this.tablaClientes.setModel(f.listarClientes());
+            System.out.println("Cliente añadido");
+        }else{
+            System.out.println("Error al añadir cliente");
+        }
+        
+       
+    }//GEN-LAST:event_buttonAction8ActionPerformed
+
+    private void txtAdminAdministradorDireccion1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAdminAdministradorDireccion1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAdminAdministradorDireccion1ActionPerformed
+
+    private void buttonAction7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAction7ActionPerformed
+        if (tablaClientes.getSelectedRow() > -1) {
+            f.eliminarCliente((String) tablaClientes.getValueAt(tablaClientes.getSelectedRow(), 0));
+            this.tablaClientes.setModel(f.listarClientes());
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione una fila");
+        }
+    }//GEN-LAST:event_buttonAction7ActionPerformed
+
+    private void listaAdminMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaAdminMouseClicked
+        List lista = new ArrayList<administrador>();
+        lista.add(f.datosAdmin(this.listaAdmin.getSelectedValue()));
+        System.out.println(lista);
+    }//GEN-LAST:event_listaAdminMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1643,6 +1761,7 @@ public class interfaz extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private org.edisoncor.gui.button.ButtonAction atras;
     private org.edisoncor.gui.panel.PanelAvatarChooser avatarAdmin;
     private org.edisoncor.gui.button.ButtonIpod btnAdminIpod;
     private org.edisoncor.gui.button.ButtonCircle btnAdminRetroceso;
@@ -1670,11 +1789,11 @@ public class interfaz extends javax.swing.JFrame {
     private org.edisoncor.gui.button.ButtonAction buttonAction8;
     private org.edisoncor.gui.button.ButtonAction buttonAction9;
     private org.edisoncor.gui.button.ButtonIcon buttonIcon1;
+    private com.toedter.calendar.JDateChooser fecha;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JList<String> jList3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -1697,9 +1816,6 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private org.edisoncor.gui.label.LabelMetric labelMetric1;
     private org.edisoncor.gui.label.LabelMetric labelMetric10;
     private org.edisoncor.gui.label.LabelMetric labelMetric11;
@@ -1745,6 +1861,7 @@ public class interfaz extends javax.swing.JFrame {
     private org.edisoncor.gui.label.LabelTask labelTask2;
     private org.edisoncor.gui.label.LabelTask labelTask3;
     private org.edisoncor.gui.label.LabelTask labelTask4;
+    private javax.swing.JList<String> listaAdmin;
     private javax.swing.JList<String> listaClientes;
     private javax.swing.JPanel panelAdmin;
     private javax.swing.JPanel panelAdminAdmin;
@@ -1754,11 +1871,13 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel panelAdminTrabajador;
     private javax.swing.JPanel panelLoguin;
     private javax.swing.JPanel panelPrincipal;
+    private javax.swing.JTable tablaClases;
+    private javax.swing.JTable tablaClientes;
+    private javax.swing.JTable tablaMaquinas;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos1;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos2;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos3;
-    private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos4;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos5;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorApellidos6;
     private org.edisoncor.gui.textField.TextField txtAdminAdministradorCodPostal;

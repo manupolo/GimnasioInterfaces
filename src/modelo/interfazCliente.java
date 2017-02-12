@@ -5,20 +5,23 @@
  */
 package modelo;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author diego
  */
 public interface interfazCliente {
-    public DefaultListModel listClientes();
+    public DefaultListModel listClases(String dni);
     public String nombreCliente(String nombre);
-    public List datosCliente(String dni);
-    
+    public DefaultTableModel listarClientes();
+    public boolean añadirCliente(String dni, String nombre, String apellidos, Date fechaNacimiento, String direccion, int codPostal, String ciudad, int telefono, String correo);
+    public boolean eliminarCliente(String dni);
         
     
       
