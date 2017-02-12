@@ -5,9 +5,12 @@
  */
 package vista;
 
+import clases.cliente;
+import fachada.fachada;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.edisoncor.gui.util.Avatar;
@@ -17,10 +20,11 @@ import org.edisoncor.gui.util.Avatar;
  * @author Manuel
  */
 public class interfaz extends javax.swing.JFrame {
-
-    /**
-     * Creates new form login
-     */
+    String dni2, nombre, apellidos, fechaNacimiento, telefono, correo, ciudad, codPostal, direccion;
+    fachada f = new fachada();
+    
+    
+    String dniCliente;
     public interfaz() {
         initComponents();
         setLocationRelativeTo(null);
@@ -33,6 +37,8 @@ public class interfaz extends javax.swing.JFrame {
         panelAdminCliente.setVisible(false);
         panelAdminMaquina.setVisible(false);
         panelAdminTrabajador.setVisible(false);
+        
+        
     }
 
     public void llenarMenu(){
@@ -139,7 +145,7 @@ public class interfaz extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jList2 = new javax.swing.JList<>();
+        listaClientes = new javax.swing.JList<>();
         panelAdminTrabajador = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
@@ -616,8 +622,20 @@ public class interfaz extends javax.swing.JFrame {
         labelMetric21.setText("Dni:");
         labelMetric21.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
 
+        txtAdminAdministradorNombre3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAdminAdministradorNombre3ActionPerformed(evt);
+            }
+        });
+
         labelMetric22.setText("Nombre:");
         labelMetric22.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
+
+        txtAdminAdministradorApellidos3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAdminAdministradorApellidos3ActionPerformed(evt);
+            }
+        });
 
         labelMetric23.setText("F. Nacimiento:");
         labelMetric23.setFont(new java.awt.Font("Arial", 1, 19)); // NOI18N
@@ -635,12 +653,17 @@ public class interfaz extends javax.swing.JFrame {
         ));
         jScrollPane4.setViewportView(jTable2);
 
-        jList2.setModel(new javax.swing.AbstractListModel<String>() {
+        listaClientes.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane5.setViewportView(jList2);
+        listaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listaClientesMouseClicked(evt);
+            }
+        });
+        jScrollPane5.setViewportView(listaClientes);
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -1420,6 +1443,8 @@ public class interfaz extends javax.swing.JFrame {
             panelAdminCliente.setVisible(true);
             panelAdminMaquina.setVisible(false);
             panelAdminTrabajador.setVisible(false);
+            listaClientes.setModel(f.listClientes());
+            this.listaClientes.setModel(f.listClientes());
         }
         
         if(avatarAdmin.getSelectedtitulo().equals("Trabajadores")){
@@ -1550,6 +1575,37 @@ public class interfaz extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_avatarAdminKeyPressed
 
+    private void listaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaClientesMouseClicked
+       cliente c = new cliente();
+        List lista = new ArrayList<cliente>();
+        lista.add(f.datosCliente(this.listaClientes.getSelectedValue()));
+        for(int i=0; i< lista.size(); i++) {
+            System.out.println(lista.get(i));
+          }
+        
+        
+        
+        
+            
+            
+        
+       
+        
+      
+        
+
+        
+        
+    }//GEN-LAST:event_listaClientesMouseClicked
+
+    private void txtAdminAdministradorApellidos3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAdminAdministradorApellidos3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAdminAdministradorApellidos3ActionPerformed
+
+    private void txtAdminAdministradorNombre3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAdminAdministradorNombre3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAdminAdministradorNombre3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1619,7 +1675,6 @@ public class interfaz extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JList<String> jList1;
-    private javax.swing.JList<String> jList2;
     private javax.swing.JList<String> jList3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -1690,6 +1745,7 @@ public class interfaz extends javax.swing.JFrame {
     private org.edisoncor.gui.label.LabelTask labelTask2;
     private org.edisoncor.gui.label.LabelTask labelTask3;
     private org.edisoncor.gui.label.LabelTask labelTask4;
+    private javax.swing.JList<String> listaClientes;
     private javax.swing.JPanel panelAdmin;
     private javax.swing.JPanel panelAdminAdmin;
     private javax.swing.JPanel panelAdminClase;
